@@ -7,3 +7,4 @@ node_modules
 # Files
 #######################################################
 yarn.lock
+.clasp.json
