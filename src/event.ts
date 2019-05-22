@@ -1,9 +1,6 @@
-//===========================================================
-// 
-//===========================================================
-export default function getValues(e: object, keys: string[]): object {
+export default function getVaclues(e: object, keys: string[]): object {
 
-    let values = {};
+    const values = {};
 
     keys.forEach((key) => {
         values[key] = e[key][0];

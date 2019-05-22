@@ -1,18 +1,7 @@
-//===========================================================
-// 
-//===========================================================
+export default function driveProcess(name: string, address: string) {
 
-//===========================================================
-// declare variables
-//===========================================================
-export default class Drive {
+    const FOLDER = DriveApp.createFolder(name);
 
-    constructor () {
-
-    }
-
-    public createDir(name:string): string {
-        return 'ID';
-    }
+    FOLDER.addEditor(address);
 
 }
