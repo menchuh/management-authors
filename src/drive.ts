@@ -1,7 +1,7 @@
-export default function driveProcess(name: string, address: string) {
+export default function driveProcess(name: string, address: string, parentFolderId: string) {
 
-    const FOLDER = DriveApp.createFolder(name);
-
-    FOLDER.addEditor(address);
+    // create folder
+    // grant editorial authority to the created folder
+    const FOLDER = DriveApp.getFolderById(parentFolderId).createFolder(name).addEditor(address);
 
 }

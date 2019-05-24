@@ -1,10 +1,28 @@
-export default function getVaclues(e: object, keys: string[]): object {
+// ===========================================================
+// import packages
+// ===========================================================
+import EventObjType from "./type/event";
 
-    const values = {};
+// ===========================================================
+// return event variables object
+// ===========================================================
+export default function getValues(e: object, formItems: object): EventObjType {
 
-    keys.forEach((key) => {
-        values[key] = e[key][0];
+    // =======================================================
+    // declare variables
+    // =======================================================
+    let eventValues: EventObjType = {
+        address: "",
+        name: "",
+    };
+    const namedValues = e["namedValues"];
+
+    // =======================================================
+    // get values
+    // =======================================================
+    Object.keys(formItems).forEach((key) => {
+        eventValues[key] = namedValues[formItems[key]][0];
     });
 
-    return values;
+    return eventValues;
 }
