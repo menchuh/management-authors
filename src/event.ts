@@ -8,21 +8,29 @@ import EventObjType from "./type/event";
 // ===========================================================
 export default function getValues(e: object, formItems: object): EventObjType {
 
-    // =======================================================
-    // declare variables
-    // =======================================================
-    let eventValues: EventObjType = {
-        address: "",
-        name: "",
-    };
-    const namedValues = e["namedValues"];
+    try {
 
-    // =======================================================
-    // get values
-    // =======================================================
-    Object.keys(formItems).forEach((key) => {
-        eventValues[key] = namedValues[formItems[key]][0];
-    });
+        // =======================================================
+        // declare variables
+        // =======================================================
+        let eventValues: EventObjType = {
+            address: "",
+            name: "",
+        };
+        const namedValues = e["namedValues"];
 
-    return eventValues;
+        // =======================================================
+        // get values
+        // =======================================================
+        Object.keys(formItems).forEach((key) => {
+            eventValues[key] = namedValues[formItems[key]][0];
+        });
+
+        return eventValues;
+
+    } catch (error) {
+
+        throw new Error(error);
+
+    }
 }
