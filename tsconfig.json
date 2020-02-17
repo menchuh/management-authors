@@ -1,5 +1,8 @@
 {
-    "compilerOptions": {},
+    "compilerOptions": {
+        "lib": ["es2019"],
+        "target": "ES5"
+    },
     "include": [
         "src/**/*"
     ],

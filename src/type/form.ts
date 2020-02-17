@@ -1,4 +1,4 @@
-export default interface EventObjType {
+export default interface FormObjType {
     address: string;
     name: string;
 }

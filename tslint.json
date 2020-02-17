@@ -10,7 +10,9 @@
         "max-line-length": [true, {
             "limit": 200,
             "ignore-pattern": "^import [^,]+ from |^export | implements"
-        }]
+        }],
+        "object-literal-shorthand": false,
+        "variable-name": false
     },
     "rulesDirectory": []
 }

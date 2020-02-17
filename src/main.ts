@@ -1,14 +1,13 @@
 // ===========================================================
 // import packages
 // ===========================================================
-import driveProcess from "./drive";
-import getEnv from "./env";
-import getValues from "./event";
-import gmmailProcess from "./mail";
-import spreadsheetProcess from "./spreadsheet";
-import EnvObjType from "./type/env";
-import EventObjType from "./type/event";
-import SpreadObjType from "./type/spreadsheet";
+import ConfigType from "./type/config";
+import FormObjType from "./type/form";
+import ConfigClass from "./utils/config";
+import EnvClass from "./utils/env";
+import EventClass from "./utils/event";
+import FolderClass from "./utils/folder";
+import NotifyClass from "./utils/notify";
 
 // ===========================================================
 // main process
@@ -17,43 +16,62 @@ function main(e: object) {
 
     try {
 
-    // =======================================================
-    // get environment variables
-    // =======================================================
-    const ENV_VAR_OBJ: EnvObjType = getEnv();
+        // =======================================================
+        // get environment variables
+        // =======================================================
+        const Env = new EnvClass();
+        // extract values
+        const FORM_ITEMS: FormObjType = Env.form_items;
+        const SHEET_NAME = Env.sheet_name;
+        const SHEET_KEYS_NAME = Env.sheet_keys_name;
+        const SHEET_KEYS_COLUMN = Env.sheet_keys_column;
+        const SHEET_VALUES_COLUMN = Env.sheet_values_column;
+        const MAIL_BODY = Env.mail_body;
+        const LINE_NOTIFY_URL = Env.line_notify_url;
+        const LINE_MESSAGE = Env.line_message;
 
-    // =======================================================
-    // get event variables
-    // =======================================================
-    const EVENT_VALUES: EventObjType = getValues(e, ENV_VAR_OBJ.form_items);
+        // =======================================================
+        // get event variables
+        // =======================================================
+        const Event = new EventClass(e, FORM_ITEMS);
+        // extract values
+        const MAIL_ADDRESS: string = Event.getAddress();
+        const AUTHOR_NAME: string = Event.getName();
 
-    // extract values
-    const MAIL_ADDRESS = EVENT_VALUES.address;
+        // =======================================================
+        // Get configurations
+        // =======================================================
+        const Config = new ConfigClass();
+        Config.setSheetName(SHEET_NAME);
+        const configObj: ConfigType = Config.getValues(SHEET_KEYS_NAME, SHEET_KEYS_COLUMN, SHEET_VALUES_COLUMN);
 
-    // =======================================================
-    // Google Spreadsheet process
-    // =======================================================
-    const SHEET_VAR_OBJ: SpreadObjType = spreadsheetProcess(ENV_VAR_OBJ.sheet_name, ENV_VAR_OBJ.sheet_keys_name, ENV_VAR_OBJ.sheet_keys_column, ENV_VAR_OBJ.sheet_values_column);
+        // extract values
+        const MY_MAIL_ADDRESS: string = configObj.address;
+        const LINE_NOTIFY_TOKEN: string = configObj.line_notify_token;
+        const PARENT_FOLDER_ID: string = configObj.parent_folder_id;
+        const SENDER_NAME: string = configObj.sender_name;
+        const MAIL_SUBJECT: string = configObj.subject;
 
-    // extract values
-    const MY_MAIL_ADDRESS = SHEET_VAR_OBJ.address;
+        // =======================================================
+        // Create a folder and attach authority.
+        // =======================================================
+        const parentFolder = new FolderClass(PARENT_FOLDER_ID);
+        parentFolder.createSubFolder(MAIL_ADDRESS, AUTHOR_NAME);
 
-    // =======================================================
-    // Google Drive process
-    // =======================================================
-    driveProcess(EVENT_VALUES.name, MAIL_ADDRESS, SHEET_VAR_OBJ.parent_folder_id);
-
-    // =======================================================
-    // Gmail process
-    // =======================================================
-    gmmailProcess(MY_MAIL_ADDRESS, MAIL_ADDRESS, SHEET_VAR_OBJ.sender_name, EVENT_VALUES.name, SHEET_VAR_OBJ.subject, ENV_VAR_OBJ.mail_body);
+        // =======================================================
+        // Send notifications
+        // =======================================================
+        const Notiry = new NotifyClass();
+        Notiry.setSMailInfo(MAIL_ADDRESS, SENDER_NAME);
+        Notiry.setLineInfo(LINE_NOTIFY_TOKEN, LINE_NOTIFY_URL);
+        Notiry.sendEmail(MY_MAIL_ADDRESS, AUTHOR_NAME, MAIL_BODY, MAIL_SUBJECT);
+        Notiry.sendMessage(LINE_MESSAGE, AUTHOR_NAME);
 
     } catch (error) {
 
         // ===================================================
         // Error process
         // ===================================================
-
         // error info
         const filename: string = `${error.fileName}.gs`;
         const lineNumber: number = error.lineNumber;
